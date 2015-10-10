@@ -21,6 +21,13 @@ class DefaultFillService
             ) ENGINE = MEMORY;
         ');
 
+        $sql = '';
+        foreach (range('a', 'z') as $letter) {
+            $sql .= "INSERT INTO `alphabet`(`letter`) VALUE('$letter');";
+        }
+
+        $this->connection->exec($sql);
+
         $this->connection->exec('DROP TABLE `alphabet`;');
     }
 }

@@ -19,8 +19,7 @@ class Version20151010231307 extends AbstractMigration
             CREATE TABLE `s_names` (
               `id` INT(11) PRIMARY KEY AUTO_INCREMENT,
               `name` VARCHAR(11),
-              `github_response_code` INT(11) DEFAULT 0,
-              UNIQUE KEY (`name`)
+              `github_response_code` INT(11) DEFAULT 0
             ) ENGINE=InnoDB;
         ');
     }

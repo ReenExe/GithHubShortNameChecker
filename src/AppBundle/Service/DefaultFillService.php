@@ -28,6 +28,11 @@ class DefaultFillService
 
         $this->connection->exec($sql);
 
+        $this->connection->exec('
+            INSERT INTO `s_names` (`name`)
+            SELECT `letter` FROM `alphabet`;
+        ');
+
         $this->connection->exec('DROP TABLE `alphabet`;');
     }
 }

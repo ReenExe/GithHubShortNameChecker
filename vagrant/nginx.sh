@@ -11,8 +11,8 @@ server {
 
     listen 80;
 
-    server_name filtration.try;
-    root        /var/www/filtration/web;
+    server_name githubfreenames.try;
+    root        /var/www/githubfreenames/web;
     index       app_dev.php;
 
     access_log  /var/log/nginx/access.log;

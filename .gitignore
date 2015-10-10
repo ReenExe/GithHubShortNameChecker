@@ -1,5 +1,9 @@
 .idea
 .vagrant
+bin
+app/cache
+app/logs
+web/bundles
 composer.lock
 vendor
 phpunit.phar

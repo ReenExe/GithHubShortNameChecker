@@ -3,6 +3,7 @@
 bin
 app/cache
 app/logs
+app/config/parameters.yml
 web/bundles
 composer.lock
 vendor

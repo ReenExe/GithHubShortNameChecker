@@ -17,13 +17,13 @@ class CheckNameService
         $this->authToken = $authToken;
     }
 
-    public function progress($limit)
+    public function progress($offset, $limit)
     {
         $source = $this->connection->fetchAll("
             SELECT `id`, `name`
             FROM `s_names`
             WHERE `github_response_code` = 0
-            LIMIT $limit;
+            LIMIT $offset, $limit;
         ");
 
         $names = array_column($source, 'name', 'id');

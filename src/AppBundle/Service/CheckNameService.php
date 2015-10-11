@@ -8,17 +8,17 @@ class CheckNameService
 {
     private $connection;
 
-    public function __construct(Connection $connection)
+    private $authToken;
+
+    public function __construct(Connection $connection, $authToken)
     {
         $this->connection = $connection;
+
+        $this->authToken = $authToken;
     }
 
     public function progress($limit)
     {
-        $client = new \GuzzleHttp\Client([
-            'base_uri' => 'https://api.github.com'
-        ]);
-
         $source = $this->connection->fetchAll("
             SELECT `id`, `name`
             FROM `s_names`
@@ -30,14 +30,19 @@ class CheckNameService
 
         $responseCodeIdMap = [];
 
+        /* @var $api \Github\Api\User */
+        $client = new \Github\Client();
+        $client->authenticate($this->authToken, \Github\Client::AUTH_HTTP_PASSWORD);
+        $api = $client->api('user');
         foreach ($names as $id => $name) {
             try {
-                $responseCode = $client->get("/users/$name")->getStatusCode();
-            } catch (\GuzzleHttp\Exception\ClientException $e) {
-                $responseCode = $e->getCode();
+                $api->show($name);
+                $code = 200;
+            } catch (\Github\Exception\RuntimeException $e) {
+                $code = $e->getCode();
             }
 
-            $responseCodeIdMap[$responseCode][] = $id;
+            $responseCodeIdMap[$code][] = $id;
         }
 
         foreach ($responseCodeIdMap as $code => $idList) {

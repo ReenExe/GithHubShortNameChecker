@@ -2,3 +2,7 @@ services:
   fn.default_fill_service:
     class: AppBundle\Service\DefaultFillService
     arguments: [@doctrine.dbal.default_connection]
+
+  fn.check_name_service:
+    class: AppBundle\Service\CheckNameService
+    arguments: [@doctrine.dbal.default_connection]

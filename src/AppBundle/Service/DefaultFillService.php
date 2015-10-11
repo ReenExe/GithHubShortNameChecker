@@ -16,11 +16,14 @@ class DefaultFillService
     public function fill()
     {
         $this->connection->exec('TRUNCATE TABLE `s_names`');
-
         $this->connection->exec('
             CREATE TABLE `alphabet` (
               `letter` CHAR(1)
             ) ENGINE = MEMORY;
+
+            CREATE TABLE `generator` (
+              `name` CHAR(1)
+            ) ENGINE = MyISAM;
         ');
 
         $sql = '';
@@ -30,46 +33,26 @@ class DefaultFillService
 
         $this->connection->exec($sql);
 
-        $matrix = [$this->generate()];
+        $this->connection->exec('
+            INSERT INTO `generator` (`name`)
+            SELECT `letter` FROM `alphabet`;
+        ');
 
-        $dimensional = 4;
-        for ($i = 2; $i <= $dimensional; ++$i) {
-            $matrix[] = $this->generateMultiDimensional($i);
+        $dimensional = 5;
+        for ($i = 1; $i < $dimensional; ++$i) {
+            $this->connection->exec('
+                INSERT INTO `generator` (`name`)
+                SELECT CONCAT(`name`, `letter`) FROM `alphabet`
+                JOIN `generator`;
+            ');
         }
 
-        $selectData = join(' UNION ALL ', $matrix);
-
-        $this->connection->exec("
+        $this->connection->exec('
             INSERT INTO `s_names` (`name`)
-            $selectData;
-        ");
+            SELECT `name` FROM `generator`;
+        ');
 
         $this->connection->exec('DROP TABLE `alphabet`;');
-    }
-
-    private function generateMultiDimensional($value)
-    {
-        $aliases = [];
-        $fields = [];
-
-        while ($value--) {
-            $alias = "a$value";
-            $aliases[] = $alias;
-            $fields[] = "`$alias`.`letter`";
-        }
-
-        $fromAlias = array_shift($aliases);
-        $concat = join(',', $fields);
-        $sql = "SELECT CONCAT($concat) FROM `alphabet` $fromAlias";
-        foreach ($aliases as $alias) {
-            $sql .= " JOIN `alphabet` $alias ";
-        }
-
-        return $sql;
-    }
-
-    private function generate()
-    {
-        return 'SELECT `letter` FROM `alphabet`';
+        $this->connection->exec('DROP TABLE `generator`;');
     }
 }

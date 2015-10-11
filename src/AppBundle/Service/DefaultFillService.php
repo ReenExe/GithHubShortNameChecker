@@ -15,6 +15,8 @@ class DefaultFillService
 
     public function fill()
     {
+        $this->connection->exec('TRUNCATE TABLE `s_names`');
+
         $this->connection->exec('
             CREATE TABLE `alphabet` (
               `letter` CHAR(1)
@@ -28,11 +30,41 @@ class DefaultFillService
 
         $this->connection->exec($sql);
 
-        $this->connection->exec('
+        $matrix = [$this->generate()];
+
+        $selectData = join(' UNION ALL ', $matrix);
+
+        $this->connection->exec("
             INSERT INTO `s_names` (`name`)
-            SELECT `letter` FROM `alphabet`;
-        ');
+            $selectData;
+        ");
 
         $this->connection->exec('DROP TABLE `alphabet`;');
+    }
+
+    private function generateMultiDimensional($value)
+    {
+        $aliases = [];
+        $fields = [];
+
+        while ($value--) {
+            $alias = "a$value";
+            $aliases[] = $alias;
+            $fields[] = "`$alias`.`letter`";
+        }
+
+        $fromAlias = array_shift($aliases);
+        $concat = join(',', $fields);
+        $sql = "SELECT CONCAT($concat) FROM `alphabet` $fromAlias";
+        foreach ($aliases as $alias) {
+            $sql .= " JOIN `alphabet` $alias ";
+        }
+
+        return $sql;
+    }
+
+    private function generate()
+    {
+        return 'SELECT `letter` FROM `alphabet`';
     }
 }

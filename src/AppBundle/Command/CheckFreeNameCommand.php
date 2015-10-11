@@ -17,9 +17,10 @@ class CheckFreeNameCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $startTime = microtime(true);
-        $limit = 100;
+        $limit = 30;
         $offset = 0;
-        $count = 3;
+        $count = 15;
+        $tries = $count * $limit;
 
         /* @var $processes Process[] */
         $processes = [];
@@ -35,7 +36,7 @@ class CheckFreeNameCommand extends ContainerAwareCommand
         do {
             foreach ($processes as $key => $process) {
                 if ($process->isRunning()) {
-                    $output->writeln('<info>Running</info>');
+                    $output->writeln("Running: <info>{$process->getPid()}</info>");
                     continue;
                 }
                 $output->writeln($process->getOutput());
@@ -48,7 +49,7 @@ class CheckFreeNameCommand extends ContainerAwareCommand
         } while (true);
 
         $duration = microtime(true) - $startTime;
-        $output->writeln("Duration: <info>$duration</info>");
-        $output->writeln('<info>Success</info>');
+        $output->writeln("Total duration: <info>$duration</info>");
+        $output->writeln("Total tries: <info>$tries</info>");
     }
 }

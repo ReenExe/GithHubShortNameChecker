@@ -17,9 +17,9 @@ class CheckFreeNameCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $startTime = microtime(true);
-        $limit = 30;
+        $limit = 125;
         $offset = 0;
-        $count = 15;
+        $count = 5;
         $tries = $count * $limit;
 
         /* @var $processes Process[] */
@@ -45,6 +45,7 @@ class CheckFreeNameCommand extends ContainerAwareCommand
             if (empty($processes)) {
                 break;
             }
+            $output->writeln('Sleep');
             sleep(2);
         } while (true);
 

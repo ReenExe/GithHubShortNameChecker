@@ -39,7 +39,10 @@ class CheckNameService
                 $api->show($name);
                 $code = 200;
             } catch (\Github\Exception\RuntimeException $e) {
-                $code = $e->getCode();
+                // "You have reached GitHub hour limit! Actual limit is: 5000"
+                if (empty($code = $e->getCode())) {
+                    break;
+                }
             }
 
             $responseCodeIdMap[$code][] = $id;

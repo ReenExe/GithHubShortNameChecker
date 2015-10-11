@@ -32,6 +32,11 @@ class DefaultFillService
 
         $matrix = [$this->generate()];
 
+        $dimensional = 3;
+        for ($i = 2; $i <= $dimensional; ++$i) {
+            $matrix[] = $this->generateMultiDimensional($i);
+        }
+
         $selectData = join(' UNION ALL ', $matrix);
 
         $this->connection->exec("

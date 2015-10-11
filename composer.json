@@ -19,7 +19,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "doctrine/doctrine-migrations-bundle": "^1.1",
         "guzzlehttp/guzzle": "^6.1",
-        "knplabs/github-api": "^1.5"
+        "knplabs/github-api": "^1.5",
+        "symfony/process": "^2.7"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

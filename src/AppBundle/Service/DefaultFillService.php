@@ -32,7 +32,7 @@ class DefaultFillService
 
         $matrix = [$this->generate()];
 
-        $dimensional = 3;
+        $dimensional = 4;
         for ($i = 2; $i <= $dimensional; ++$i) {
             $matrix[] = $this->generateMultiDimensional($i);
         }

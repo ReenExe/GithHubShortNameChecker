@@ -16,7 +16,7 @@ class CheckNameService
     public function progress($limit)
     {
         $client = new \GuzzleHttp\Client([
-            'base_uri' => 'https://api.github.com/'
+            'base_uri' => 'https://api.github.com'
         ]);
 
         $source = $this->connection->fetchAll("
@@ -32,7 +32,7 @@ class CheckNameService
 
         foreach ($names as $id => $name) {
             try {
-                $responseCode = $client->get($name)->getStatusCode();
+                $responseCode = $client->get("/users/$name")->getStatusCode();
             } catch (\GuzzleHttp\Exception\ClientException $e) {
                 $responseCode = $e->getCode();
             }

@@ -17,23 +17,22 @@ class CheckFreeNameCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $startTime = microtime(true);
-        $limit = 125;
+        $total = 5000;
+        $oneTimeProcessLimit = 10;
+        $limit = 100;
         $offset = 0;
-        $count = 5;
-        $tries = $count * $limit;
 
         /* @var $processes Process[] */
-        $processes = [];
+        /* @var $queue Process[] */
+        $queue = $processes = [];
+        $count = $total / $limit;
         while ($count--) {
-            $process = new Process("app/console fn:check:name:process --offset=$offset --limit=$limit");
-            $process->start();
-            $processes[] = $process;
+            $queue[] = new Process("app/console fn:check:name:process --offset=$offset --limit=$limit");
             $offset += $limit;
         }
 
-        sleep(2);
-
         do {
+            /* @var $process Process */
             foreach ($processes as $key => $process) {
                 if ($process->isRunning()) {
                     $output->writeln("Running: <info>{$process->getPid()}</info>");
@@ -42,6 +41,13 @@ class CheckFreeNameCommand extends ContainerAwareCommand
                 $output->writeln($process->getOutput());
                 unset($processes[$key]);
             }
+
+            while ($queue && count($processes) < $oneTimeProcessLimit) {
+                $process = array_shift($queue);
+                $process->start();
+                $processes[] = $process;
+            }
+
             if (empty($processes)) {
                 break;
             }
@@ -51,6 +57,6 @@ class CheckFreeNameCommand extends ContainerAwareCommand
 
         $duration = microtime(true) - $startTime;
         $output->writeln("Total duration: <info>$duration</info>");
-        $output->writeln("Total tries: <info>$tries</info>");
+        $output->writeln("Total tries: <info>$total</info>");
     }
 }

@@ -31,7 +31,7 @@ class CheckFreeNameCommand extends ContainerAwareCommand
             $offset += $limit;
         }
 
-        do {
+        while (true) {
             /* @var $process Process */
             foreach ($processes as $key => $process) {
                 if ($process->isRunning()) {
@@ -53,7 +53,7 @@ class CheckFreeNameCommand extends ContainerAwareCommand
             }
             $output->writeln('Sleep');
             sleep(2);
-        } while (true);
+        }
 
         $duration = microtime(true) - $startTime;
         $output->writeln("Total duration: <info>$duration</info>");
